@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Blog</title>
+    <!-- Include Twitter Bootstrap and jQuery: -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" th:href="@{/css/virtual-select.min.css}">
+    <script type="text/javascript" th:src="@{/js/virtual-select.min.js}"></script>
+</head>
+<body>
+<div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid mr-3 ml-3">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/dashboard}">Blogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Tags</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container my-5">
+    <h1>Edit Blog</h1>
+    <form th:action="@{/saveBlog}" method="post">
+        <input type="hidden" name="id" th:value="${blog.id}">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" th:value="${blog.title}"
+                   placeholder="Title goes here...">
+        </div>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea name="content" class="form-control" id="content" rows="3" th:text="${blog.content}"></textarea>
+        </div>
+        <br>
+        <div class="mb-3">
+            <label for="category">Select Category</label>
+            <select class="form-control" id="category" name="category">
+                <option selected disabled>Choose Category...</option>
+                <option th:each="cate:${listOfCategories}" th:value="${cate.id}" th:text="${cate.name}" th:selected="${blog.category.id}"></option>
+            </select>
+        </div>
+        <br>
+        <div class="mb-3 form-group">
+            <label for="tags">Select Tags</label>
+            <br>
+            <select id="tags" class="form-select" aria-label="Tags" name="tags" data-search="true" data-silent-initial-value-set="true" multiple>
+                <option th:each="tag:${listOfTags}" th:text="${tag.name}" th:value="${tag.id}" th:selected="${blog.tags.contains(tag)}"></option>
+            </select>
+        </div>
+        <a th:href="@{/dashboard}" class="btn btn-danger">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+
+</div>
+    <script type="text/javascript">
+        VirtualSelect.init({
+            ele: '#tags',
+            multiple: true
+        });
+    </script>
+</body>
+</html>

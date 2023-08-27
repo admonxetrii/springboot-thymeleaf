@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+
+    <!-- Include Twitter Bootstrap and jQuery: -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" th:href="@{/css/virtual-select.min.css}">
+    <script type="text/javascript" th:src="@{/js/virtual-select.min.js}"></script>
+
+</head>
+<body>
+<div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid mr-3 ml-3">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/dashboard}">Blogs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Tags</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a class="nav-link" th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<!--    Main table to show blogs -->
+<div class="container my-2">
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Blogs</h1>
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add Blog
+            </button>
+        </div>
+    </div>
+
+    <div th:if="${param.error}">
+        <div class="alert">
+            Error while adding blog. Please try again. {{param.error}}
+        </div>
+    </div>
+
+    <table class="table table-stripped table-responsive-md">
+        <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Content</th>
+            <th scope="col">Category</th>
+            <th scope="col">Tags</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="blog:${listOfBlogs}">
+            <th scope="row" th:text="${blog.title}"></th>
+            <td th:text="${blog.content}"></td>
+            <td th:text="${blog.category.name}"></td>
+            <td><span class="badge bg-primary" th:each="tag:${blog.tags}" th:text="${tag.name}">&nbsp;</span></td>
+            <td>
+                <a class="primary" th:href="@{/editBlog/{id}(id=${blog.id})}"><i class="fa fa-edit"></i></a>
+                <a class="danger" th:href="@{/deleteBlog/{id}(id=${blog.id})}"><i class="fa fa-remove"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Blog</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/saveBlog}" method="post">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title"
+                               placeholder="Title goes here..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Content</label>
+                        <textarea name="content" class="form-control" id="content" rows="3"></textarea>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="category">Select Category</label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option selected disabled>Choose Category...</option>
+                            <option th:each="cate:${listOfCategories}" th:value="${cate.id}"
+                                    th:text="${cate.name}"></option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="tags">Select Tags</label>
+                        <br>
+                        <select id="tags" class="form-select" aria-label="Tags" name="tags" data-search="true" data-silent-initial-value-set="true" multiple>
+                            <option th:each="tag:${listOfTags}" th:text="${tag.name}" th:value="${tag.id}"></option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+        VirtualSelect.init({
+            ele: '#tags',
+            multiple: true
+        });
+    </script>
+</body>
+</html>
