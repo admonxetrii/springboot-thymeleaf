@@ -18,7 +18,6 @@ public class Blog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Integer id;
 
     @NotEmpty(message = "Blog's title cannot be empty.")
@@ -29,7 +28,6 @@ public class Blog {
     @Column(name = "CONTENT")
     private String content;
 
-    @NotEmpty(message = "Blog's category cannot be empty.")
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
     @ToString.Exclude

@@ -5,6 +5,7 @@ import com.interviewtest.nisham.service.abstrations.BlogService;
 import com.interviewtest.nisham.service.abstrations.CategoryService;
 import com.interviewtest.nisham.service.abstrations.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +21,14 @@ public class BlogController {
     private final TagService tagService;
 
     @PostMapping("saveBlog")
-    public String saveBlog(@ModelAttribute("blog") Blog blog) {
-        blogService.saveBlog(blog);
-        return "redirect:/dashboard";
+    public ResponseEntity<Blog> saveBlog(@ModelAttribute("blog") Blog blog) {
+        Blog savedBlog = blogService.saveBlog(blog);
+        return ResponseEntity.ok(savedBlog);
     }
 
-    @GetMapping("editBlog/{id}")
-    public String editBlog(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("listOfCategories", categoryService.getAllCategories());
-        model.addAttribute("listOfTags", tagService.getAllTags());
-        model.addAttribute("blog", blogService.getBlogById(id));
-        return "/editBlog";
+    @GetMapping("getBlog/{id}")
+    public ResponseEntity<Blog> getBlogById(@PathVariable("id") Integer id, Model model) {
+        return ResponseEntity.ok(blogService.getBlogById(id));
     }
 
     @GetMapping("deleteBlog/{id}")

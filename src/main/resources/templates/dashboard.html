@@ -8,7 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
     <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+          integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
     <link rel="stylesheet" th:href="@{/css/virtual-select.min.css}">
     <script type="text/javascript" th:src="@{/js/virtual-select.min.js}"></script>
@@ -75,13 +77,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="blog:${listOfBlogs}">
+        <tr th:each="blog:${listOfBlogs}" th:id="'blog' + ${blog.id}">
             <th scope="row" th:text="${blog.title}"></th>
             <td th:text="${blog.content}"></td>
             <td th:text="${blog.category.name}"></td>
             <td><span class="badge bg-primary" th:each="tag:${blog.tags}" th:text="${tag.name}">&nbsp;</span></td>
             <td>
-                <a class="primary" th:href="@{/editBlog/{id}(id=${blog.id})}"><i class="fa fa-edit"></i></a>
+                <a class="primary editButton" th:href="@{/getBlog/{id}(id=${blog.id})}"><i class="fa fa-edit"></i></a>
                 <a class="danger" th:href="@{/deleteBlog/{id}(id=${blog.id})}"><i class="fa fa-remove"></i></a>
             </td>
         </tr>
@@ -89,7 +91,7 @@
     </table>
 </div>
 
-<!-- Modal -->
+<!--Add Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -98,7 +100,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form th:action="@{/saveBlog}" method="post">
+                <form id="saveBlogForm" th:action="@{/saveBlog}" method="post">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
                         <input type="text" class="form-control" id="title" name="title"
@@ -121,7 +123,53 @@
                     <div class="mb-3">
                         <label for="tags">Select Tags</label>
                         <br>
-                        <select id="tags" class="form-select" aria-label="Tags" name="tags" data-search="true" data-silent-initial-value-set="true" multiple>
+                        <select id="tags" class="form-select" aria-label="Tags" name="tags" data-search="true"
+                                data-silent-initial-value-set="true" multiple>
+                            <option th:each="tag:${listOfTags}" th:text="${tag.name}" th:value="${tag.id}"></option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Blog</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Edit Modal -->
+<div class="modal fade" id="editModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">Edit Blog</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBlogForm" th:action="@{/saveBlog}" method="post">
+                    <input type="hidden" name="id" id="editBlogId">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editTitle" name="title"
+                               placeholder="Title goes here..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Content</label>
+                        <textarea name="content" class="form-control" id="editContent" rows="3"></textarea>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="category">Select Category</label>
+                        <select class="form-control" id="editCategory" name="category" required>
+                            <option th:each="cate:${listOfCategories}" th:value="${cate.id}"
+                                    th:text="${cate.name}"></option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="tags">Select Tags</label>
+                        <br>
+                        <select id="editTags" class="form-select" aria-label="Tags" name="tags" data-search="true"
+                                data-silent-initial-value-set="true" multiple>
                             <option th:each="tag:${listOfTags}" th:text="${tag.name}" th:value="${tag.id}"></option>
                         </select>
                     </div>
@@ -132,11 +180,122 @@
         </div>
     </div>
 </div>
-    <script type="text/javascript">
-        VirtualSelect.init({
-            ele: '#tags',
-            multiple: true
+
+
+<script type="text/javascript">
+    VirtualSelect.init({
+        ele: '#tags',
+        multiple: true
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //clear model form data
+        $('#exampleModal').on('hidden.bs.modal', function () {
+            $(this).find('form').trigger('reset');
         });
-    </script>
+
+        // form submit through ajax to save blog
+        $("#saveBlogForm").submit(function (event) {
+            event.preventDefault();
+            console.log("form submitted");
+            console.log($(this).serialize());
+            var form = $(this);
+            var url = form.attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (data) {
+                    console.log(data);
+                    var tagsHtml = "";
+                    for (var i = 0; i < data.tags.length; i++) {
+                        tagsHtml += "<span class='badge bg-primary'>" + data.tags[i].name + "</span>";
+                    }
+                    var action = "<a class='primary editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
+                        "<a class='danger' href='/deleteBlog/" + data.id + "'><i class='fa fa-remove'></i></a>";
+                    var row = "<tr>" +
+                        "<th scope='row'>" + data.title + "</th>" +
+                        "<td>" + data.content + "</td>" +
+                        "<td>" + data.category.name + "</td>" +
+                        "<td>" + tagsHtml + "</td>" +
+                        "<td>" + action + "</td>" +
+                        "</tr>";
+                    $("table tbody").append(row);
+                    $("#exampleModal").modal('hide');
+                },
+                error: function (data) {
+                    console.log(data);
+                    $("#exampleModal").modal('hide');
+                }
+            });
+        });
+
+        // on click of edit button fetch blog data and show in edit modal
+        $(".editButton").click(function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            $("#editBlogId").val(href.split("/")[2]);
+            console.log(href)
+            $.ajax({
+                type: "GET",
+                url: href,
+                success: function (data) {
+                    console.log(data);
+                    $("#editModel").modal('show');
+                    $("#editBlogForm input[name='editBlogId']").val(data.id);
+                    $("#editBlogForm input[name='title']").val(data.title);
+                    $("#editBlogForm textarea[name='content']").val(data.content);
+                    $("#editBlogForm select[name='category']").val(data.category.id);
+                    $("#editBlogForm select[name='tags']").val(data.tags.map(function (tag) {
+                        return tag.id;
+                    }));
+                    VirtualSelect.init({
+                        ele: '#editTags',
+                        multiple: true
+                    });
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        });
+
+        $("#editBlogForm").submit(function (event) {
+            event.preventDefault();
+            console.log("form submitted");
+            console.log($(this).serialize());
+            var form = $(this);
+            var url = form.attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (data) {
+                    console.log(data);
+                    //update row of table
+                    var tagsHtml = "";
+                    for (var i = 0; i < data.tags.length; i++) {
+                        tagsHtml += "<span class='badge bg-primary'>" + data.tags[i].name + "</span>";
+                    }
+                    var action = "<a class='primary editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
+                        "<a class='danger' href='/deleteBlog/" + data.id + "'><i class='fa fa-remove'></i></a>";
+                    var row =
+                        "<th scope='row'>" + data.title + "</th>" +
+                        "<td>" + data.content + "</td>" +
+                        "<td>" + data.category.name + "</td>" +
+                        "<td>" + tagsHtml + "</td>" +
+                        "<td>" + action + "</td>";
+                    $("#blog" + data.id).html(row);
+                    $("#editModel").modal('hide');
+                },
+                error: function (data) {
+                    console.log(data);
+                    $("#editModel").modal('hide');
+                }
+            });
+        });
+    })
+</script>
 </body>
 </html>

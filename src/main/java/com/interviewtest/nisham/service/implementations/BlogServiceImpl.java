@@ -24,7 +24,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void saveBlog(Blog blog) {
+    public Blog saveBlog(Blog blog) {
         try{
             if (blog.getId() != null) {
                 Blog existingBlog = blogRepository.findById(blog.getId()).orElse(null);
@@ -37,6 +37,7 @@ public class BlogServiceImpl implements BlogService {
                 }
             }
             blogRepository.save(blog);
+            return blog;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
