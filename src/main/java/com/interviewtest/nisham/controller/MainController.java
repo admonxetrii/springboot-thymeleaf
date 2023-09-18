@@ -22,7 +22,6 @@ public class MainController {
 
     @GetMapping("dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("listOfBlogs", blogService.getAllBlogs());
         model.addAttribute("listOfCategories", categoryService.getAllCategories());
         model.addAttribute("listOfTags", tagService.getAllTags());
         return "/dashboard";

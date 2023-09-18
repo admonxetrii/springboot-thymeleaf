@@ -77,16 +77,6 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="blog:${listOfBlogs}" th:id="'blog' + ${blog.id}">
-            <th scope="row" th:text="${blog.title}"></th>
-            <td th:text="${blog.content}"></td>
-            <td th:text="${blog.category.name}"></td>
-            <td><span class="badge bg-primary" th:each="tag:${blog.tags}" th:text="${tag.name}">&nbsp;</span></td>
-            <td>
-                <a class="primary editButton" th:href="@{/getBlog/{id}(id=${blog.id})}"><i class="fa fa-edit"></i></a>
-                <a class="danger" th:href="@{/deleteBlog/{id}(id=${blog.id})}"><i class="fa fa-remove"></i></a>
-            </td>
-        </tr>
         </tbody>
     </table>
 </div>
@@ -190,6 +180,37 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
+        //fetch all blogs when page loads
+        $.ajax({
+            type: "GET",
+            url: "/getAllBlogs",
+            success: function (data) {
+                console.log(data);
+                var blogs = data;
+                var blogsHtml = "";
+                for (var i = 0; i < blogs.length; i++) {
+                    var blogTags = blogs[i].tags.split(', ');
+                    console.log(blogTags)
+                    var tagsHtml = "";
+                    for (var j = 0; j < blogTags.length; j++) {
+                        tagsHtml += "<span class='badge bg-primary'>" + blogTags[j] + "</span>";
+                    }
+                    var action = "<a class='primary editButton' href='/getBlog/" + blogs[i].id + "'><i class='fa fa-edit'></i></a>" +
+                        "<a class='danger' href='/deleteBlog/" + blogs[i].id + "'><i class='fa fa-remove'></i></a>";
+                    blogsHtml += "<tr id='blog" + blogs[i].id + "'>" +
+                        "<th scope='row'>" + blogs[i].title + "</th>" +
+                        "<td>" + blogs[i].content + "</td>" +
+                        "<td>" + blogs[i].category + "</td>" +
+                        "<td>" + tagsHtml + "</td>" +
+                        "<td>" + action + "</td>" +
+                        "</tr>";
+                }
+                $("table tbody").html(blogsHtml);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
         //clear model form data
         $('#exampleModal').on('hidden.bs.modal', function () {
             $(this).find('form').trigger('reset');
@@ -234,9 +255,8 @@
         // on click of edit button fetch blog data and show in edit modal
         $(".editButton").click(function (event) {
             event.preventDefault();
-            var href = $(this).attr('href');
+            const href = $(this).attr('href');
             $("#editBlogId").val(href.split("/")[2]);
-            console.log(href)
             $.ajax({
                 type: "GET",
                 url: href,
@@ -265,8 +285,8 @@
             event.preventDefault();
             console.log("form submitted");
             console.log($(this).serialize());
-            var form = $(this);
-            var url = form.attr('action');
+            const form = $(this);
+            const url = form.attr('action');
             $.ajax({
                 type: "POST",
                 url: url,

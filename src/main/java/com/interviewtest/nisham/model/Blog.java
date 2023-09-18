@@ -1,6 +1,7 @@
 package com.interviewtest.nisham.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.interviewtest.nisham.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -11,14 +12,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name="BLOG")
-public class Blog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Blog extends BaseEntity {
 
     @NotEmpty(message = "Blog's title cannot be empty.")
     @Column(name = "TITLE")

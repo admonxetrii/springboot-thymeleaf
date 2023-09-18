@@ -1,12 +1,15 @@
 package com.interviewtest.nisham.service.implementations;
 
 import com.interviewtest.nisham.model.Blog;
+import com.interviewtest.nisham.model.BlogDTO;
 import com.interviewtest.nisham.repository.BlogRepository;
 import com.interviewtest.nisham.service.abstrations.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +17,10 @@ public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepository;
 
     @Override
-    public List<Blog> getAllBlogs() {
-        return blogRepository.findAll();
+    public List<BlogDTO> getAllBlogs() {
+        List<BlogDTO> blogs = blogRepository.getAllBlogs().orElse(null);
+        if (Objects.isNull(blogs)) return null;
+        return blogs;
     }
 
     @Override
@@ -33,8 +38,12 @@ public class BlogServiceImpl implements BlogService {
                     existingBlog.setContent(blog.getContent());
                     existingBlog.setCategory(blog.getCategory());
                     existingBlog.setTags(blog.getTags());
+                    existingBlog.setModifiedBy(1);
                     blog = existingBlog;
                 }
+            } else {
+                blog.setAddedBy(1);
+                blog.setAddedDate(LocalDateTime.now());
             }
             blogRepository.save(blog);
             return blog;
