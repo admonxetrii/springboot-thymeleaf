@@ -195,7 +195,7 @@
                     for (var j = 0; j < blogTags.length; j++) {
                         tagsHtml += "<span class='badge bg-primary'>" + blogTags[j] + "</span>";
                     }
-                    var action = "<a class='primary editButton' href='/getBlog/" + blogs[i].id + "'><i class='fa fa-edit'></i></a>" +
+                    var action = "<a class='editButton' href='/getBlog/" + blogs[i].id + "'><i class='fa fa-edit'></i></a>" +
                         "<a class='danger' href='/deleteBlog/" + blogs[i].id + "'><i class='fa fa-remove'></i></a>";
                     blogsHtml += "<tr id='blog" + blogs[i].id + "'>" +
                         "<th scope='row'>" + blogs[i].title + "</th>" +
@@ -233,7 +233,7 @@
                     for (var i = 0; i < data.tags.length; i++) {
                         tagsHtml += "<span class='badge bg-primary'>" + data.tags[i].name + "</span>";
                     }
-                    var action = "<a class='primary editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
+                    var action = "<a class='editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
                         "<a class='danger' href='/deleteBlog/" + data.id + "'><i class='fa fa-remove'></i></a>";
                     var row = "<tr>" +
                         "<th scope='row'>" + data.title + "</th>" +
@@ -298,7 +298,7 @@
                     for (var i = 0; i < data.tags.length; i++) {
                         tagsHtml += "<span class='badge bg-primary'>" + data.tags[i].name + "</span>";
                     }
-                    var action = "<a class='primary editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
+                    var action = "<a class='editButton' href='/getBlog/" + data.id + "'><i class='fa fa-edit'></i></a>" +
                         "<a class='danger' href='/deleteBlog/" + data.id + "'><i class='fa fa-remove'></i></a>";
                     var row =
                         "<th scope='row'>" + data.title + "</th>" +

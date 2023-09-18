@@ -35,7 +35,7 @@ public class BlogController {
     }
 
     @GetMapping("getBlog/{id}")
-    public ResponseEntity<Blog> getBlogById(@PathVariable("id") Integer id, Model model) {
+    public ResponseEntity<BlogDTO> getBlogById(@PathVariable("id") Integer id, Model model) {
         return ResponseEntity.ok(blogService.getBlogById(id));
     }
 

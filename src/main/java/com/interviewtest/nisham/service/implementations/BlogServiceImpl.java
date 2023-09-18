@@ -24,8 +24,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Blog getBlogById(Integer id) {
-        return blogRepository.findById(id).orElse(null);
+    public BlogDTO getBlogById(Integer id) {
+        return blogRepository.findBlogById(id).orElse(null);
     }
 
     @Override
